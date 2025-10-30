@@ -33,3 +33,107 @@ table th, table td { padding: 8px; border: 1px solid #ddd; text-align:left; }
   width: 100% !important;
   height: 100% !important;
 }
+
+.dashboard {
+  padding: 1.5rem;
+  font-family: 'Poppins', sans-serif;
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.5rem;
+  margin: 1.5rem 0;
+}
+
+.summary-card {
+  background: #fff;
+  padding: 1rem;
+  border-radius: 12px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+  text-align: center;
+}
+
+.summary-card h3 {
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+  color: #555;
+}
+
+.summary-card p {
+  font-size: 1.4rem;
+  font-weight: bold;
+  margin: 0;
+}
+
+.summary-card.income p { color: #4caf50; }
+.summary-card.expense p { color: #f44336; }
+.summary-card.balance p { color: #2196f3; }
+
+.charts-section {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  justify-content: center;
+  margin: 2rem 0;
+}
+
+.chart-box {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+  padding: 1rem;
+  width: 380px;
+  height: 320px;
+}
+
+.chart-box h4 {
+  text-align: center;
+  margin-bottom: 0.5rem;
+  color: #333;
+}
+
+.chart-box canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.table-container {
+  overflow-x: auto;
+  margin-top: 1rem;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+th, td {
+  padding: 0.8rem 1rem;
+  text-align: left;
+}
+
+th {
+  background: #f4f6f8;
+  color: #555;
+  font-weight: 600;
+}
+
+tr:nth-child(even) {
+  background: #fafafa;
+}
+
+.delete-btn {
+  background: #f44336;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.delete-btn:hover {
+  background: #d32f2f;
+}

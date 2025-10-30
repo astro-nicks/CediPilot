@@ -1,75 +1,79 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>Dashboard</h2>
-<p>Welcome, {{ current_user.name or current_user.email }}!</p>
+<div class="dashboard">
+  <h2>Welcome, {{ current_user.name or current_user.email }} 👋</h2>
 
-<div class="cards">
-  <div class="card">
-    <h3>Total Income</h3>
-    <p>GHS {{ "%.2f"|format(total_income) }}</p>
+  <!-- Summary Cards -->
+  <div class="summary-grid">
+    <div class="summary-card income">
+      <h3>Total Income</h3>
+      <p>GHS {{ "%.2f"|format(total_income) }}</p>
+    </div>
+    <div class="summary-card expense">
+      <h3>Total Expense</h3>
+      <p>GHS {{ "%.2f"|format(total_expense) }}</p>
+    </div>
+    <div class="summary-card balance">
+      <h3>Balance</h3>
+      <p>GHS {{ "%.2f"|format(balance) }}</p>
+    </div>
   </div>
-  <div class="card">
-    <h3>Total Expense</h3>
-    <p>GHS {{ "%.2f"|format(total_expense) }}</p>
-  </div>
-  <div class="card">
-    <h3>Balance</h3>
-    <p>GHS {{ "%.2f"|format(balance) }}</p>
+
+  <!-- Charts Section -->
+  <section class="charts-section">
+    <div class="chart-box">
+      <h4>Spending by Category</h4>
+      <canvas id="categoryChart"></canvas>
+    </div>
+    <div class="chart-box">
+      <h4>Monthly Overview</h4>
+      <canvas id="monthlyChart"></canvas>
+    </div>
+  </section>
+
+  <!-- Recent Transactions -->
+  <h3>Recent Transactions</h3>
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Type</th>
+          <th>Category</th>
+          <th>Amount (GHS)</th>
+          <th>Note</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for t in transactions %}
+        <tr>
+          <td>{{ t.date }}</td>
+          <td>{{ t.t_type }}</td>
+          <td>{{ t.category }}</td>
+          <td>{{ "%.2f"|format(t.amount) }}</td>
+          <td>{{ t.note or "" }}</td>
+          <td>
+            <form action="{{ url_for('delete_transaction', txn_id=t.id) }}" method="post" style="display:inline;">
+              <button type="submit" class="delete-btn" onclick="return confirm('Delete this transaction?')">Delete</button>
+            </form>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="6">No transactions yet. Add one!</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
   </div>
 </div>
 
-<h3>Recent Transactions</h3>
-<table>
-  <thead>
-    <tr>
-      <th>Date</th><th>Type</th><th>Category</th><th>Amount (GHS)</th><th>Note</th><th>Action</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for t in transactions %}
-    <tr>
-      <td>{{ t.date }}</td>
-      <td>{{ t.t_type }}</td>
-      <td>{{ t.category }}</td>
-      <td>{{ "%.2f"|format(t.amount) }}</td>
-      <td>{{ t.note or "" }}</td>
-      <td>
-        <form action="{{ url_for('delete_transaction', txn_id=t.id) }}" method="post" style="display:inline;">
-          <button type="submit" onclick="return confirm('Delete this transaction?')">Delete</button>
-        </form>
-      </td>
-    </tr>
-    {% else %}
-    <tr><td colspan="6">No transactions yet. Add one!</td></tr>
-    {% endfor %}
-  </tbody>
-</table>
-
-<hr>
-<h3>Spending Overview</h3>
-
-<div class="chart-container">
-  <div class="chart-box">
-    <canvas id="categoryChart"></canvas>
-  </div>
-  <div class="chart-box">
-    <canvas id="monthlyChart"></canvas>
-  </div>
-</div>
-
-<div style="display:flex; flex-wrap:wrap; gap:2rem;">
-  <canvas id="categoryChart" width="350" height="350"></canvas>
-  <canvas id="monthlyChart" width="450" height="350"></canvas>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- Chart.js Scripts -->
 <script>
-  const categoryTotals = {{ category_totals | tojson }};
-  const monthlyTotals = {{ monthly_totals | tojson }};
+  const categoryTotals = JSON.parse('{{ category_totals | tojson | safe }}');
+  const monthlyTotals = JSON.parse('{{ monthly_totals | tojson | safe }}');
 
-  // --- Pie Chart ---
-  const ctx1 = document.getElementById('categoryChart');
-  new Chart(ctx1, {
+  // --- Category Pie Chart ---
+  new Chart(document.getElementById('categoryChart'), {
     type: 'pie',
     data: {
       labels: Object.keys(categoryTotals),
@@ -77,20 +81,26 @@
         label: 'Expenses by Category',
         data: Object.values(categoryTotals),
         backgroundColor: [
-          '#4caf50','#ff9800','#2196f3','#f44336','#9c27b0','#ffc107'
+          '#4caf50', '#2196f3', '#ff9800', '#f44336', '#9c27b0', '#ffc107'
         ]
       }]
     },
-    options: { plugins:{ legend:{ position:'right' } } }
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'bottom' },
+        title: { display: false }
+      }
+    }
   });
 
-  // --- Bar Chart ---
+  // --- Monthly Bar Chart ---
   const months = Object.keys(monthlyTotals).sort();
   const incomeData = months.map(m => monthlyTotals[m].income);
   const expenseData = months.map(m => monthlyTotals[m].expense);
 
-  const ctx2 = document.getElementById('monthlyChart');
-  new Chart(ctx2, {
+  new Chart(document.getElementById('monthlyChart'), {
     type: 'bar',
     data: {
       labels: months,
@@ -101,7 +111,10 @@
     },
     options: {
       responsive: true,
-      plugins: { legend: { position: 'bottom' } },
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'bottom' }
+      },
       scales: { y: { beginAtZero: true } }
     }
   });
