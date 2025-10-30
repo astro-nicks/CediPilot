@@ -2,6 +2,7 @@
 {% block content %}
 <h2>Dashboard</h2>
 <p>Welcome, {{ current_user.name or current_user.email }}!</p>
+
 <div class="cards">
   <div class="card">
     <h3>Total Income</h3>
@@ -19,7 +20,11 @@
 
 <h3>Recent Transactions</h3>
 <table>
-  <thead><tr><th>Date</th><th>Type</th><th>Category</th><th>Amount (GHS)</th><th>Note</th><th>Action</th></tr></thead>
+  <thead>
+    <tr>
+      <th>Date</th><th>Type</th><th>Category</th><th>Amount (GHS)</th><th>Note</th><th>Action</th>
+    </tr>
+  </thead>
   <tbody>
     {% for t in transactions %}
     <tr>
@@ -40,9 +45,65 @@
   </tbody>
 </table>
 
-<!-- Simple data stub for Chart.js later (we'll wire it in Phase 4) -->
+<hr>
+<h3>Spending Overview</h3>
+
+<div class="chart-container">
+  <div class="chart-box">
+    <canvas id="categoryChart"></canvas>
+  </div>
+  <div class="chart-box">
+    <canvas id="monthlyChart"></canvas>
+  </div>
+</div>
+
+<div style="display:flex; flex-wrap:wrap; gap:2rem;">
+  <canvas id="categoryChart" width="350" height="350"></canvas>
+  <canvas id="monthlyChart" width="450" height="350"></canvas>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
   const categoryTotals = {{ category_totals | tojson }};
-  // later: render chart using this data
+  const monthlyTotals = {{ monthly_totals | tojson }};
+
+  // --- Pie Chart ---
+  const ctx1 = document.getElementById('categoryChart');
+  new Chart(ctx1, {
+    type: 'pie',
+    data: {
+      labels: Object.keys(categoryTotals),
+      datasets: [{
+        label: 'Expenses by Category',
+        data: Object.values(categoryTotals),
+        backgroundColor: [
+          '#4caf50','#ff9800','#2196f3','#f44336','#9c27b0','#ffc107'
+        ]
+      }]
+    },
+    options: { plugins:{ legend:{ position:'right' } } }
+  });
+
+  // --- Bar Chart ---
+  const months = Object.keys(monthlyTotals).sort();
+  const incomeData = months.map(m => monthlyTotals[m].income);
+  const expenseData = months.map(m => monthlyTotals[m].expense);
+
+  const ctx2 = document.getElementById('monthlyChart');
+  new Chart(ctx2, {
+    type: 'bar',
+    data: {
+      labels: months,
+      datasets: [
+        { label: 'Income', data: incomeData, backgroundColor: '#4caf50' },
+        { label: 'Expense', data: expenseData, backgroundColor: '#f44336' }
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { position: 'bottom' } },
+      scales: { y: { beginAtZero: true } }
+    }
+  });
 </script>
 {% endblock %}

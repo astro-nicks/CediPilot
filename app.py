@@ -3,6 +3,7 @@ from models import db, User, Transaction
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from datetime import date
+from collections import defaultdict
 
 def create_app():
     app = Flask(__name__)
@@ -79,13 +80,20 @@ def create_app():
             if t.t_type == "expense":
                 category_totals[t.category] = category_totals.get(t.category, 0) + t.amount
 
+        monthly_totals = defaultdict(lambda: {"income": 0, "expense": 0})
+        for t in transactions:
+            key = t.date.strftime("%Y-%m")
+            monthly_totals[key][t.t_type] += t.amount
+
+
         return render_template(
             "dashboard.html",
             transactions=transactions,
             total_income=total_income,
             total_expense=total_expense,
             balance=balance,
-            category_totals=category_totals
+            category_totals=category_totals,
+            monthly_totals=monthly_totals
         )
 
     @app.route("/transaction/add", methods=["GET", "POST"])
