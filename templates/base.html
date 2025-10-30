@@ -7,6 +7,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
+  <header class="app-header">
+  <h1 class="logo">CediPilot</h1>
+  <button id="theme-toggle" aria-label="Toggle theme">🌙</button>
+</header>
   <nav>
     <a href="{{ url_for('index') }}">CediPilot</a>
     {% if current_user.is_authenticated %}
@@ -33,5 +37,22 @@
     {% block content %}{% endblock %}
   </main>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+  const toggleButton = document.getElementById('theme-toggle');
+  const currentTheme = localStorage.getItem('theme');
+
+  // Apply previously saved theme
+  if (currentTheme === 'dark') {
+    document.body.classList.add('dark-mode');
+    toggleButton.textContent = '🌞';
+  }
+
+  toggleButton.addEventListener('click', () => {
+    document.body.classList.toggle('dark-mode');
+    const isDark = document.body.classList.contains('dark-mode');
+    toggleButton.textContent = isDark ? '🌞' : '🌙';
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+  });
+</script>
 </body>
 </html>

@@ -137,3 +137,65 @@ tr:nth-child(even) {
 .delete-btn:hover {
   background: #d32f2f;
 }
+
+/* General page styling */
+body {
+  background: var(--bg);
+  color: var(--text);
+  transition: background 0.3s, color 0.3s;
+}
+
+/* Default light theme */
+:root {
+  --bg: #f9fafb;
+  --text: #222;
+  --card-bg: #fff;
+  --shadow: rgba(0,0,0,0.08);
+}
+
+/* Dark theme overrides */
+.dark-mode {
+  --bg: #1a1a1a;
+  --text: #e0e0e0;
+  --card-bg: #2a2a2a;
+  --shadow: rgba(255,255,255,0.08);
+}
+
+/* Header */
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background: var(--card-bg);
+  box-shadow: 0 2px 8px var(--shadow);
+}
+
+.logo {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+#theme-toggle {
+  background: transparent;
+  border: none;
+  font-size: 1.3rem;
+  cursor: pointer;
+  color: var(--text);
+  transition: transform 0.2s;
+}
+
+#theme-toggle:hover {
+  transform: scale(1.2);
+}
+
+/* Cards and tables respect theme colors */
+.summary-card, .chart-box, table {
+  background: var(--card-bg);
+  box-shadow: 0 3px 10px var(--shadow);
+}
+
+th, td {
+  color: var(--text);
+}
