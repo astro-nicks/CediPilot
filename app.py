@@ -50,13 +50,16 @@ def create_app():
         if request.method == "POST":
             email = request.form.get("email").strip().lower()
             password = request.form.get("password")
+            print("Login attempt with:", email)   # 👈 added
             user = User.query.filter_by(email=email).first()
+            print("Found user:", user)            # 👈 added
             if not user or not check_password_hash(user.password_hash, password):
                 flash("Invalid email or password.", "danger")
                 return redirect(url_for("login"))
             login_user(user)
             return redirect(url_for("dashboard"))
         return render_template("login.html")
+
 
     @app.route("/logout")
     @login_required
