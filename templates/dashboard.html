@@ -120,4 +120,28 @@
     }
   });
 </script>
+
+...
+</table>
+</div>
+
+<script>
+  const user = JSON.parse(localStorage.getItem("user"));
+  const userName = document.getElementById("userName");
+  const userEmail = document.getElementById("userEmail");
+  const logoutBtn = document.getElementById("logoutBtn");
+
+  if (!user) {
+    window.location.href = "login.html";
+  } else {
+    userName.textContent = user.name;
+    userEmail.textContent = user.email;
+  }
+
+  logoutBtn.addEventListener("click", () => {
+    localStorage.removeItem("user");
+    window.location.href = "login.html";
+  });
+</script>
+
 {% endblock %}
