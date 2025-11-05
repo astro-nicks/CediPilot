@@ -1,6 +1,6 @@
 body { font-family: Arial, Helvetica, sans-serif; margin: 0; padding: 0; }
 nav { background: #0b5; padding: 10px; display:flex; gap:1rem; align-items:center;}
-nav a { color: #000; text-decoration: none; font-weight: bold; }
+nav a { color: var(--text); text-decoration: none; font-weight: bold; }
 .container { padding: 20px; }
 .cards { display:flex; gap: 1rem; margin-bottom: 1rem; }
 .card { padding: 10px; border-radius: 6px; background:#f5f5f5; min-width:160px; }
@@ -21,7 +21,7 @@ table th, table td { padding: 8px; border: 1px solid #ddd; text-align:left; }
 }
 
 .chart-box {
-  background: #fff;
+  background: var(--card-bg);
   border-radius: 12px;
   box-shadow: 0 3px 10px rgba(0,0,0,0.1);
   padding: 1rem;
@@ -79,7 +79,7 @@ table th, table td { padding: 8px; border: 1px solid #ddd; text-align:left; }
 }
 
 .chart-box {
-  background: #fff;
+  background: var(--card-bg);
   border-radius: 12px;
   box-shadow: 0 3px 10px rgba(0,0,0,0.08);
   padding: 1rem;
@@ -106,7 +106,7 @@ table th, table td { padding: 8px; border: 1px solid #ddd; text-align:left; }
 table {
   width: 100%;
   border-collapse: collapse;
-  background: #fff;
+  background: var(--card-bg);
   border-radius: 8px;
   overflow: hidden;
 }
@@ -198,4 +198,32 @@ body {
 
 th, td {
   color: var(--text);
+}
+
+/* Ensure all common elements inherit theme colors */
+a, p, label, input, select, button, h1, h2, h3, h4, th, td, li, span {
+  color: var(--text);
+}
+
+input, select, textarea {
+  background: var(--card-bg);
+  border: 1px solid var(--shadow);
+  color: var(--text);
+}
+
+/* Flash messages and alerts */
+.flash.success { background: #2e7d32; color: #fff; }
+.flash.danger { background: #c62828; color: #fff; }
+.flash.warning { background: #f9a825; color: #222; }
+
+/* Links adapt to theme */
+a { color: var(--text); }
+a:hover { opacity: 0.8; }
+
+/* Chart container background consistency */
+canvas {
+  background: var(--card-bg);
+  border-radius: 8px;
+  padding: 10px;
+  box-shadow: 0 2px 8px var(--shadow);
 }
