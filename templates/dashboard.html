@@ -23,11 +23,15 @@
   <section class="charts-section">
     <div class="chart-box">
       <h4>Spending by Category</h4>
-      <canvas id="categoryChart"></canvas>
+      <div style="height: 300px;">
+        <canvas id="categoryChart"></canvas>
+      </div>
     </div>
     <div class="chart-box">
       <h4>Monthly Overview</h4>
-      <canvas id="monthlyChart"></canvas>
+      <div style="height: 300px;">
+        <canvas id="monthlyChart"></canvas>
+      </div>
     </div>
   </section>
 
@@ -68,7 +72,7 @@
 </div>
 
 <!-- Chart.js Scripts -->
- <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
   const categoryTotals = JSON.parse('{{ category_totals | tojson | safe }}');
   const monthlyTotals = JSON.parse('{{ monthly_totals | tojson | safe }}');
@@ -120,28 +124,4 @@
     }
   });
 </script>
-
-...
-</table>
-</div>
-
-<script>
-  const user = JSON.parse(localStorage.getItem("user"));
-  const userName = document.getElementById("userName");
-  const userEmail = document.getElementById("userEmail");
-  const logoutBtn = document.getElementById("logoutBtn");
-
-  if (!user) {
-    window.location.href = "login.html";
-  } else {
-    userName.textContent = user.name;
-    userEmail.textContent = user.email;
-  }
-
-  logoutBtn.addEventListener("click", () => {
-    localStorage.removeItem("user");
-    window.location.href = "login.html";
-  });
-</script>
-
 {% endblock %}

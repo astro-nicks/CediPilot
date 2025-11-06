@@ -5,6 +5,7 @@ from flask_login import LoginManager, login_user, login_required, logout_user, c
 from datetime import date
 from collections import defaultdict
 
+
 def create_app():
     app = Flask(__name__)
     app.config["SECRET_KEY"] = "replace-this-with-a-secret"  # change for production
@@ -21,18 +22,22 @@ def create_app():
     def load_user(user_id):
         return User.query.get(int(user_id))
 
+    # ---------------- ROUTES ---------------- #
+
     @app.route("/")
     def index():
         if current_user.is_authenticated:
             return redirect(url_for("dashboard"))
-        return render_template("index.html")
+        return redirect(url_for("login"))
 
+    # ----------- Register ----------- #
     @app.route("/register", methods=["GET", "POST"])
     def register():
         if request.method == "POST":
             email = request.form.get("email").strip().lower()
             name = request.form.get("name").strip()
             password = request.form.get("password")
+
             if User.query.filter_by(email=email).first():
                 flash("Email already registered. Try logging in.", "warning")
                 return redirect(url_for("login"))
@@ -43,41 +48,48 @@ def create_app():
             db.session.commit()
             flash("Account created. Please log in.", "success")
             return redirect(url_for("login"))
+
         return render_template("register.html")
 
+    # ----------- Login ----------- #
     @app.route("/login", methods=["GET", "POST"])
     def login():
         if request.method == "POST":
             email = request.form.get("email").strip().lower()
             password = request.form.get("password")
-            print("Login attempt with:", email)   # 👈 added
+
             user = User.query.filter_by(email=email).first()
-            print("Found user:", user)            # 👈 added
+
             if not user or not check_password_hash(user.password_hash, password):
                 flash("Invalid email or password.", "danger")
                 return redirect(url_for("login"))
+
             login_user(user)
+            flash("Login successful!", "success")
             return redirect(url_for("dashboard"))
+
         return render_template("login.html")
 
-
+    # ----------- Logout ----------- #
     @app.route("/logout")
     @login_required
     def logout():
         logout_user()
-        flash("Logged out.", "info")
-        return redirect(url_for("index"))
+        flash("Logged out successfully.", "info")
+        return redirect(url_for("login"))
 
+    # ----------- Dashboard ----------- #
     @app.route("/dashboard")
     @login_required
     def dashboard():
-        # simple aggregates
-        transactions = Transaction.query.filter_by(user_id=current_user.id).order_by(Transaction.date.desc()).all()
+        transactions = Transaction.query.filter_by(
+            user_id=current_user.id
+        ).order_by(Transaction.date.desc()).all()
+
         total_income = sum(t.amount for t in transactions if t.t_type == "income")
         total_expense = sum(t.amount for t in transactions if t.t_type == "expense")
         balance = total_income - total_expense
 
-        # category totals for a simple chart later
         category_totals = {}
         for t in transactions:
             if t.t_type == "expense":
@@ -88,7 +100,7 @@ def create_app():
             key = t.date.strftime("%Y-%m")
             monthly_totals[key][t.t_type] += t.amount
 
-
+        # ✅ make sure this file exists: templates/dashboard.html
         return render_template(
             "dashboard.html",
             transactions=transactions,
@@ -96,9 +108,11 @@ def create_app():
             total_expense=total_expense,
             balance=balance,
             category_totals=category_totals,
-            monthly_totals=monthly_totals
+            monthly_totals=monthly_totals,
+            user=current_user
         )
 
+    # ----------- Add Transaction ----------- #
     @app.route("/transaction/add", methods=["GET", "POST"])
     @login_required
     def add_transaction():
@@ -120,19 +134,19 @@ def create_app():
             )
             db.session.add(txn)
             db.session.commit()
-            flash("Transaction added.", "success")
+            flash("Transaction added successfully.", "success")
             return redirect(url_for("dashboard"))
 
-        # default categories (you can expand later)
         categories = ["Food", "Transport", "Bills", "Entertainment", "Salary", "Other"]
         return render_template("add_transaction.html", categories=categories)
 
+    # ----------- Delete Transaction ----------- #
     @app.route("/transaction/delete/<int:txn_id>", methods=["POST"])
     @login_required
     def delete_transaction(txn_id):
         txn = Transaction.query.get_or_404(txn_id)
         if txn.user_id != current_user.id:
-            flash("Not allowed.", "danger")
+            flash("Not authorized to delete this transaction.", "danger")
             return redirect(url_for("dashboard"))
         db.session.delete(txn)
         db.session.commit()
@@ -140,6 +154,7 @@ def create_app():
         return redirect(url_for("dashboard"))
 
     return app
+
 
 if __name__ == "__main__":
     app = create_app()
