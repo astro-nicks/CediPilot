@@ -12,14 +12,14 @@
   <button id="theme-toggle" aria-label="Toggle theme">🌙</button>
 </header>
   <nav>
-    <a href="{{ url_for('index') }}">CediPilot</a>
+    <a href="{{ url_for('main.home') }}">CediPilot</a>
     {% if current_user.is_authenticated %}
-      <a href="{{ url_for('dashboard') }}">Dashboard</a>
-      <a href="{{ url_for('add_transaction') }}">Add</a>
-      <a href="{{ url_for('logout') }}">Logout</a>
+      <a href="{{ url_for('main.dashboard') }}">Dashboard</a>
+      <a href="{{ url_for('main.add_transaction') }}">Add</a>
+      <a href="{{ url_for('auth.logout') }}">Logout</a>
     {% else %}
-      <a href="{{ url_for('login') }}">Login</a>
-      <a href="{{ url_for('register') }}">Register</a>
+      <a href="{{ url_for('auth.login') }}">Login</a>
+      <a href="{{ url_for('auth.register') }}">Register</a>
     {% endif %}
   </nav>
 
