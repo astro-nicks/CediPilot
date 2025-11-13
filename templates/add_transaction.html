@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 <h2>Add Transaction</h2>
-<form method="post">
+<form method="post" action="{{ url_for('main.add_transaction') }}">
   <label>Type</label><br>
   <select name="t_type" required>
     <option value="expense">Expense</option>
@@ -19,7 +19,7 @@
   </select><br>
 
   <label>Date</label><br>
-  <input name="date" type="date" value="{{ ('' ) }}"><br>
+  <input name="date" type="date" required><br>
 
   <label>Note</label><br>
   <input name="note"><br>

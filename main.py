@@ -29,7 +29,7 @@ def dashboard():
     )
 
 
-@main.route("/add_transaction", methods=["POST"])
+@main.route("/add_transaction", methods=["POST","GET"])
 @login_required
 def add_transaction():
     try:
